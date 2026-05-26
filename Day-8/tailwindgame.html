@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz Battle Game</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body{
+      background: linear-gradient(135deg,#0f172a,#1e293b,#312e81);
+      overflow-x: hidden;
+    }
+
+    .glow{
+      box-shadow: 0 0 20px rgba(99,102,241,0.7);
+    }
+
+    .option:hover{
+      transform: scale(1.03);
+    }
+
+    .winner{
+      animation: pop 1s infinite alternate;
+    }
+
+    @keyframes pop{
+      from{
+        transform: scale(1);
+      }
+      to{
+        transform: scale(1.08);
+      }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4">
+
+  <div class="bg-slate-900 text-white w-full max-w-3xl rounded-3xl p-8 glow">
+
+    <!-- Heading -->
+    <h1 class="text-4xl font-bold text-center mb-6 text-cyan-400">
+      ⚔ Quiz Battle Game ⚔
+    </h1>
+
+    <!-- Score Board -->
+    <div class="grid grid-cols-2 gap-5 mb-9">
+
+      <div class="bg-indigo-600 rounded-2xl p-5 text-center">
+        <h2 class="text-2xl font-bold">Player</h2>
+        <p id="playerScore" class="text-4xl mt-2 font-bold">0</p>
+      </div>
+
+      <div class="bg-pink-600 rounded-2xl p-5 text-center">
+        <h2 class="text-2xl font-bold">Computer</h2>
+        <p id="computerScore" class="text-4xl mt-2 font-bold">0</p>
+      </div>
+
+    </div>
+
+    <!-- Question -->
+    <div class="bg-slate-800 p-7 rounded-2xl mb-6">
+      <h2 id="question" class="text-2xl font-semibold text-center">
+        Loading Question...
+      </h2>
+    </div>
+
+    <!-- Options -->
+    <div id="options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    </div>
+
+    <!-- Result -->
+    <div id="result" class="text-center text-2xl font-bold mt-6"></div>
+
+    <!-- Next Button -->
+    <div class="text-center mt-8">
+      <button
+        id="nextBtn"
+        class="bg-cyan-500 hover:bg-cyan-400 text-black px-8 py-3 rounded-full text-lg font-bold transition duration-300 hidden">
+        Next Question
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+
+    const questions = [
+         {
+        question: "Which keyword is used to declare a variable in JavaScript?",
+        options: ["int", "string", "let", "define"],
+        answer: "let"
+      },
+       {
+        question: "What is Extension of js?",
+        options: [".javascript", ".js", ".html", ".css"],
+        answer: ".js"
+      },
+       {
+        question: "Which symbol is used for comments in JavaScript?",
+        options: ["<!-- -->", "//", "##", "**"],
+        answer: "//"
+      },
+           {
+        question: "Which method is used to print something in console??",
+        options: ["print()", "write()", "console.log()", "document.write()"],
+        answer: "console.log()"
+      },
+      
+
+      {
+        question: "Which language is used for web styling?",
+        options: ["HTML", "CSS", "Python", "Java"],
+        answer: "CSS"
+      },
+      {
+        question: "Which tag is used for JavaScript?",
+        options: ["<js>", "<script>", "<javascript>", "<code>"],
+        answer: "<script>"
+      },
+      {
+        question: "Which company created JavaScript?",
+        options: ["Google", "Microsoft", "Netscape", "Apple"],
+        answer: "Netscape"
+      },
+      {
+        question: "Which CSS framework is utility-first?",
+        options: ["Bootstrap", "Tailwind CSS", "Bulma", "UIKit"],
+        answer: "Tailwind CSS"
+      },
+      {
+        question: "Which operator is used for strict equality?",
+        options: ["==", "=", "===", "!="],
+        answer: "==="
+      },
+      {
+        question: "Which event occurs when button is clicked?",
+        options: ["onhover", "onchange", "onclick", "onmouse"],
+        answer: "onclick"
+      },
+       {
+        question: "Which array method adds element at end?",
+        options: ["pop()", "push()", "shift()", "slice()"],
+        answer: "push()"
+      },
+      {
+        question: "Which keyword is used for function creation?",
+        options: ["method", "define", "function", "func"],
+        answer: "function"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let playerScore = 0;
+    let computerScore = 0;
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const resultEl = document.getElementById("result");
+    const nextBtn = document.getElementById("nextBtn");
+
+    const playerScoreEl = document.getElementById("playerScore");
+    const computerScoreEl = document.getElementById("computerScore");
+
+    function loadQuestion() {
+
+      resultEl.innerHTML = "";
+      nextBtn.classList.add("hidden");
+
+      const q = questions[currentQuestion];
+
+      questionEl.innerText = q.question;
+
+      optionsEl.innerHTML = "";
+
+      q.options.forEach(option => {
+
+        const btn = document.createElement("button");
+
+        btn.innerText = option;
+
+        btn.className =
+          "option bg-slate-700 hover:bg-indigo-500 transition duration-300 p-4 rounded-xl text-lg font-semibold";
+
+        btn.onclick = () => checkAnswer(option);
+
+        optionsEl.appendChild(btn);
+
+      });
+
+    }
+
+    function checkAnswer(selected) {
+
+      const correct = questions[currentQuestion].answer;
+
+      // Computer random answer
+      const computerRandom =
+        questions[currentQuestion].options[
+          Math.floor(Math.random() * 4)
+        ];
+
+      if (selected === correct) {
+        playerScore++;
+        resultEl.innerHTML =
+          "✅ Correct! You attacked the computer!";
+        resultEl.className =
+          "text-center text-2xl font-bold mt-6 text-green-400";
+      } else {
+        resultEl.innerHTML =
+          "❌ Wrong Answer!";
+        resultEl.className =
+          "text-center text-2xl font-bold mt-6 text-red-400";
+      }
+
+      if (computerRandom === correct) {
+        computerScore++;
+      }
+
+      playerScoreEl.innerText = playerScore;
+      computerScoreEl.innerText = computerScore;
+
+      document.querySelectorAll(".option").forEach(btn => {
+        btn.disabled = true;
+
+        if (btn.innerText === correct) {
+          btn.classList.add("bg-green-500");
+        }
+      });
+
+      nextBtn.classList.remove("hidden");
+
+    }
+
+    nextBtn.addEventListener("click", () => {
+
+      currentQuestion++;
+
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        showWinner();
+      }
+
+    });
+
+    function showWinner() {
+
+      optionsEl.innerHTML = "";
+      nextBtn.style.display = "none";
+
+      if (playerScore > computerScore) {
+
+        questionEl.innerHTML =
+          "🏆 You Win The Battle!";
+
+        questionEl.classList.add("winner","text-green-400");
+
+      } else if (computerScore > playerScore) {
+
+        questionEl.innerHTML =
+          "💀 Computer Wins!";
+
+        questionEl.classList.add("winner","text-red-400");
+
+      } else {
+
+        questionEl.innerHTML =
+          "🤝 Match Draw!";
+
+        questionEl.classList.add("winner","text-yellow-400");
+
+      }
+
+      resultEl.innerHTML =
+        `Final Score : You ${playerScore} - ${computerScore} Computer`;
+
+    }
+
+    loadQuestion();
+
+  </script>
+
+</body>
+</html>
