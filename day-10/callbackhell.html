@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Callback Hell Example</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #output {
+            margin-top: 20px;
+            text-align: left;
+            width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #ccc;
+            padding: 15px;
+            min-height: 150px;
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Callback Hell Example</h1>
+    <button onclick="startProcess()">Start Process</button>
+
+    <div id="output"></div>
+
+    <script>
+        const output = document.getElementById("output");
+
+        function print(message) {
+            output.innerHTML += message + "<br>";
+        }
+
+        // Simulate fetching user
+        function getUser(callback) {
+            setTimeout(() => {
+                print("✅ User fetched");
+                callback({
+                    id: 1,
+                    name: "Sahil"
+                });
+            }, 1000);
+        }
+
+        // Simulate fetching orders
+        function getOrders(userId, callback) {
+            setTimeout(() => {
+                print("✅ Orders fetched for User ID: " + userId);
+                callback([
+                    { orderId: 101, product: "Laptop" },
+                    { orderId: 102, product: "Mouse" }
+                ]);
+            }, 1000);
+        }
+
+        // Simulate fetching order details
+        function getOrderDetails(orderId, callback) {
+            setTimeout(() => {
+                print("✅ Order details fetched for Order ID: " + orderId);
+                callback({
+                    orderId: orderId,
+                    amount: 50000
+                });
+            }, 1000);
+        }
+
+        // Simulate fetching payment info
+        function getPaymentInfo(orderId, callback) {
+            setTimeout(() => {
+                print("✅ Payment info fetched for Order ID: " + orderId);
+                callback({
+                    paymentId: "PAY12345",
+                    status: "Success"
+                });
+            }, 1000);
+        }
+
+        function startProcess() {
+            output.innerHTML = "";
+
+            // CALLBACK HELL STARTS HERE
+            getUser(function(user) {
+
+                getOrders(user.id, function(orders) {
+
+                    getOrderDetails(orders[0].orderId, function(orderDetails) {
+
+                        getPaymentInfo(orderDetails.orderId, function(paymentInfo) {
+
+                            print("<hr>");
+                            print("<b>Final Result:</b>");
+                            print("User: " + user.name);
+                            print("Product: " + orders[0].product);
+                            print("Amount: ₹" + orderDetails.amount);
+                            print("Payment Status: " + paymentInfo.status);
+
+                        });
+
+                    });
+
+                });
+
+            });
+            // CALLBACK HELL ENDS HERE
+        }
+    </script>
+
+</body>
+</html>
